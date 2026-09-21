@@ -4,925 +4,919 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Periodic Table Mastery</title>
+<meta name="color-scheme" content="light dark">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,400..900&family=Schibsted+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/mhchem.min.js"></script>
 <style>
 :root {
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --bg-main: #f8fafc;
-  --bg-card: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  --correct: #059669;
-  --wrong: #dc2626;
-  --cat-alkali: #fca5a5;
-  --cat-alkaline: #fdba74;
-  --cat-transition: #fcd34d;
-  --cat-post-transition: #a7f3d0;
-  --cat-metalloid: #86efac;
-  --cat-reactive-nonmetal: #93c5fd;
-  --cat-noble: #c4b5fd;
-  --cat-lanthanide: #f9a8d4;
-  --cat-actinide: #fda4af;
-  --cat-unknown: #e2e8f0;
+  /* Base: cool slate "lab paper" with navy ink */
+  --paper: #e9edf2;
+  --surface: #f8f9fb;
+  --surface-2: #dfe4eb;
+  --ink: #1a2238;
+  --ink-2: #566079;
+  --ink-3: #8a93a6;
+  --rule: #c7ced9;
+  /* Sodium D-line yellow: selection + focus */
+  --sodium: #f2b400;
+  --sodium-ink: #3a2b00;
+  --correct: #11775f;
+  --wrong: #c22a3f;
+
+  /* Element families: mid-tone pigments, tinted into tiles with color-mix */
+  --cat-alkali: #ef7d57;
+  --cat-alkaline: #f0a93b;
+  --cat-transition: #6d8fc9;
+  --cat-post-transition: #5fa8a0;
+  --cat-metalloid: #9cb548;
+  --cat-reactive-nonmetal: #3fb58a;
+  --cat-noble: #9a78d6;
+  --cat-lanthanide: #d8739f;
+  --cat-actinide: #cf5c5c;
+  --cat-unknown: #9aa2b1;
+
+  --tint: 34%;
+  --radius-tile: 5px;
+  --radius-panel: 14px;
+
+  --f-sym: 'Anybody', 'Schibsted Grotesk', sans-serif;
+  --f-ui: 'Schibsted Grotesk', -apple-system, 'Segoe UI', sans-serif;
+  --f-zh: 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  line-height: 1.5;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111a2c;
+    --surface: #18223a;
+    --surface-2: #212c47;
+    --ink: #e7ebf3;
+    --ink-2: #a2abc0;
+    --ink-3: #6f7a93;
+    --rule: #2d3a58;
+    --sodium: #ffc933;
+    --correct: #4fd1a8;
+    --wrong: #ff6b7d;
+    --tint: 30%;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111a2c;
+  --surface: #18223a;
+  --surface-2: #212c47;
+  --ink: #e7ebf3;
+  --ink-2: #a2abc0;
+  --ink-3: #6f7a93;
+  --rule: #2d3a58;
+  --sodium: #ffc933;
+  --correct: #4fd1a8;
+  --wrong: #ff6b7d;
+  --tint: 30%;
 }
 
-/* Navigation */
-nav {
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 20px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--f-ui);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.5;
+  font-size: 16px;
+  min-height: 100vh;
+}
+button, select, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--sodium); outline-offset: 2px; border-radius: 4px; }
+.zh { font-family: var(--f-zh); }
+
+/* ---------- Top bar ---------- */
+.topbar {
   position: sticky;
   top: 0;
   z-index: 50;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  display: flex;
-  justify-content: center;
-  gap: 8px;
+  background: color-mix(in oklab, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
 }
-nav button {
+.topbar-inner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.brand-tile {
+  width: 38px;
+  height: 40px;
+  border-radius: var(--radius-tile);
+  background: var(--ink);
+  color: var(--paper);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: 3px 4px 2px;
+  line-height: 1;
+}
+.brand-tile small { font-size: 8px; font-weight: 600; }
+.brand-tile b {
+  font-family: var(--f-sym);
+  font-variation-settings: 'wdth' 130;
+  font-weight: 800;
+  font-size: 18px;
+  text-align: center;
+  align-self: center;
+}
+.brand-name { font-weight: 700; font-size: 0.98rem; line-height: 1.1; }
+.brand-name span { display: block; font-family: var(--f-zh); font-weight: 500; font-size: 0.78rem; color: var(--ink-2); }
+
+nav.tabs {
+  display: flex;
+  gap: 2px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button {
   background: none;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 14px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 8px;
-  font-family: inherit;
-  transition: all 0.15s;
+  color: var(--ink-2);
+  border-radius: 999px;
+  white-space: nowrap;
 }
-nav button:hover { color: var(--primary); background: #f1f5f9; }
-nav button.active { color: white; background: var(--primary); }
+nav.tabs button:hover { color: var(--ink); background: var(--surface-2); }
+nav.tabs button.active { color: var(--paper); background: var(--ink); }
+.about-btn {
+  background: none;
+  border: 1px solid var(--rule);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+  flex-shrink: 0;
+}
+.about-btn:hover { color: var(--ink); border-color: var(--ink-3); }
 
-.container { max-width: 1500px; margin: 0 auto; padding: 24px 20px; }
+/* ---------- Layout ---------- */
+.container { max-width: 1480px; margin: 0 auto; padding: 36px 24px 80px; }
 .view { display: none; }
 .view.active { display: block; }
 
-/* Periodic Table */
-.table-wrap { overflow-x: auto; padding-bottom: 16px; }
+.view-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.section-title {
+  font-family: var(--f-sym);
+  font-variation-settings: 'wdth' 118;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+.section-title .zh {
+  font-weight: 500;
+  font-size: 0.55em;
+  color: var(--ink-2);
+  margin-left: 12px;
+  letter-spacing: 0.04em;
+  font-variation-settings: normal;
+}
+.section-sub {
+  color: var(--ink-2);
+  font-size: 1rem;
+  max-width: 60ch;
+  margin-top: 8px;
+}
+
+/* ---------- Periodic table ---------- */
+.table-wrap {
+  overflow-x: auto;
+  padding: 4px 2px 12px;
+  scrollbar-width: thin;
+}
 .ptable {
   display: grid;
-  grid-template-columns: repeat(18, minmax(58px, 1fr));
-  gap: 7px;
-  min-width: 1160px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(18, minmax(50px, 1fr));
+  gap: 4px;
+  min-width: 980px;
 }
-.ptable.compact { gap: 7px; }
+.ptable + .ptable { margin-top: 4px; }
+.ptable.f-block { margin-top: 18px; }
+
 .cell {
-  background: var(--bg-card);
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 6px;
-  padding: 4px 5px;
+  --c: var(--cat-unknown);
+  background: color-mix(in oklab, var(--c) var(--tint), var(--surface));
+  border: 1px solid color-mix(in oklab, var(--c) 45%, transparent);
+  border-radius: var(--radius-tile);
+  padding: 4px 5px 5px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: stretch;
-  aspect-ratio: 1 / 1.05;
+  aspect-ratio: 1 / 1.08;
   cursor: pointer;
   user-select: none;
-  transition: transform 0.12s, box-shadow 0.12s;
   position: relative;
-  font-family: 'Inter', sans-serif;
   overflow: hidden;
+  color: var(--ink);
+  transition: opacity .2s, box-shadow .12s;
 }
-.cell:hover {
-  transform: scale(1.08);
-  z-index: 5;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
-  border-color: var(--primary);
+.cell:hover, .cell.is-hover {
+  box-shadow: 0 0 0 2px var(--ink);
+  z-index: 2;
 }
-.cell .num {
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: #475569;
-  line-height: 1;
-}
+.cell .num { font-size: 0.64rem; font-weight: 600; line-height: 1; color: var(--ink-2); }
 .cell .sym {
-  font-size: 1.15rem;
+  font-family: var(--f-sym);
+  font-variation-settings: 'wdth' 125;
+  font-size: clamp(1rem, 1.35vw, 1.4rem);
   font-weight: 800;
   text-align: center;
   line-height: 1;
-  color: #0f172a;
 }
 .cell .name {
-  font-size: 0.55rem;
+  font-size: 0.56rem;
   text-align: center;
-  color: #334155;
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1;
+  color: var(--ink-2);
 }
-.cell .mass {
-  font-size: 0.52rem;
-  text-align: center;
-  color: var(--text-muted);
-  line-height: 1;
-}
+.cell .mass { display: none; }
 .cell.placeholder {
-  background: #f1f5f9 !important;
-  border: 1px dashed var(--border);
+  background: transparent;
+  border: 1px dashed var(--rule);
   cursor: default;
   pointer-events: none;
   justify-content: center;
   align-items: center;
-  font-size: 0.65rem;
-  color: var(--text-muted);
+  font-size: 0.62rem;
   font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink-3);
   text-align: center;
 }
-.cell.empty {
-  background: transparent !important;
-  border: none !important;
+.cell.empty { background: transparent; border: none; pointer-events: none; }
+.cell.dim { opacity: .18; }
+
+
+/* The live preview that fills the gap above the transition metals */
+.preview {
+  grid-column: 3 / 13;
+  grid-row: 1 / 4;
+  align-self: stretch;
+  margin: 0 10px 10px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 22px;
+  align-items: center;
+  padding: 4px 8px;
   pointer-events: none;
 }
+.preview-tile {
+  --c: var(--cat-unknown);
+  height: 100%;
+  max-height: 176px;
+  aspect-ratio: 1 / 1.08;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--c) calc(var(--tint) + 14%), var(--surface));
+  border: 1px solid color-mix(in oklab, var(--c) 60%, transparent);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 10px 12px;
+  transition: background .18s;
+}
+.preview-tile .p-num { font-weight: 700; font-size: 1rem; line-height: 1; }
+.preview-tile .p-sym {
+  font-family: var(--f-sym);
+  font-variation-settings: 'wdth' 140;
+  font-weight: 850;
+  font-size: clamp(3rem, 5vw, 4.6rem);
+  line-height: 1;
+  align-self: center;
+  text-align: center;
+}
+.preview-tile .p-mass { font-size: 0.8rem; text-align: center; color: var(--ink-2); }
+.preview-info { min-width: 0; }
+.preview-name { font-size: clamp(1.3rem, 2vw, 1.9rem); font-weight: 700; line-height: 1.1; }
+.preview-name .zh { font-weight: 700; margin-left: 10px; }
+.preview-family { color: var(--ink-2); font-weight: 500; margin-top: 4px; font-size: 0.95rem; }
+.preview-facts {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: 2px 28px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+}
+.preview-facts dt { color: var(--ink-3); font-size: 0.75rem; }
+.preview-facts dd { font-weight: 600; }
+.preview-empty { color: var(--ink-2); font-size: 0.95rem; max-width: 36ch; }
 
-/* Category colors */
-.alkali-metal { background: var(--cat-alkali); }
-.alkaline-earth-metal { background: var(--cat-alkaline); }
-.transition-metal { background: var(--cat-transition); }
-.post-transition-metal { background: var(--cat-post-transition); }
-.metalloid { background: var(--cat-metalloid); }
-.reactive-nonmetal { background: var(--cat-reactive-nonmetal); }
-.noble-gas { background: var(--cat-noble); }
-.lanthanide { background: var(--cat-lanthanide); }
-.actinide { background: var(--cat-actinide); }
-.unknown { background: var(--cat-unknown); }
-
-.f-block { margin-top: 8px; }
-
-/* Legend */
+/* Legend doubles as a family filter */
 .legend {
-  background: var(--bg-card);
-  border-radius: 12px;
-  padding: 14px 18px;
-  margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  font-size: 0.8rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  gap: 6px;
+  margin-top: 22px;
 }
-.legend-item { display: flex; align-items: center; gap: 6px; }
-.legend-swatch {
-  width: 14px; height: 14px;
-  border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.1);
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.85rem;
+  font-weight: 500;
 }
+.legend-item:hover { border-color: var(--ink-3); }
+.legend-item[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.legend-swatch { width: 14px; height: 14px; border-radius: 4px; }
 
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 8px;
+/* ---------- Shared controls ---------- */
+.seg {
+  display: inline-flex;
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 2px;
 }
-.section-sub {
-  color: var(--text-muted);
+.seg button {
+  border: none;
+  background: none;
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.seg button:hover { color: var(--ink); }
+.seg button.active { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(26,34,56,.14); }
+
+.quiz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  margin-bottom: 22px;
+}
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 200px; }
+.field label { font-size: 0.8rem; font-weight: 600; color: var(--ink-2); }
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23808aa0' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 10px 40px 10px 14px;
   font-size: 0.95rem;
-  margin-bottom: 20px;
+  font-weight: 500;
+  cursor: pointer;
 }
+.field select:hover { border-color: var(--ink-3); }
 
-/* Modal */
+.btn {
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+  padding: 11px 22px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+.btn:hover { background: color-mix(in oklab, var(--ink) 85%, var(--paper)); }
+.btn:disabled { opacity: .35; cursor: not-allowed; }
+.btn-quiet {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+.btn-quiet:hover { border-color: var(--ink-3); }
+
+/* ---------- Quiz ---------- */
+.quiz-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 18px;
+  align-items: stretch;
+}
+.quiz-card {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  padding: 44px 40px 36px;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.quiz-hint { color: var(--ink-2); font-weight: 600; font-size: 0.95rem; }
+.quiz-display {
+  margin: 14px 0 28px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 22px;
+  font-size: clamp(1.9rem, 4.2vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  min-height: 1.2em;
+}
+.quiz-display .q-sym { font-family: var(--f-sym); font-variation-settings: 'wdth' 140; font-weight: 850; }
+.quiz-display .q-zh { font-family: var(--f-zh); }
+.quiz-display .q-sep { color: var(--ink-3); font-weight: 400; }
+.quiz-display .katex { font-size: 1.05em; }
+.quiz-input {
+  width: 100%;
+  max-width: 520px;
+  border: none;
+  border-bottom: 2px solid var(--ink);
+  background: transparent;
+  padding: 8px 2px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-radius: 0;
+}
+.quiz-input::placeholder { color: var(--ink-3); font-weight: 500; }
+.quiz-input:focus { outline: none; border-bottom-color: var(--sodium); box-shadow: 0 2px 0 var(--sodium); }
+.quiz-input:disabled { opacity: .55; }
+.quiz-input.is-wrong { border-bottom-color: var(--wrong); color: var(--wrong); text-decoration: line-through; opacity: 1; }
+.quiz-feedback { min-height: 3.2em; margin-top: 14px; font-size: 1.05rem; }
+.quiz-feedback .correct { color: var(--correct); font-weight: 700; }
+.quiz-feedback .wrong { color: var(--wrong); font-weight: 700; }
+.quiz-feedback .hint-line { display: block; color: var(--ink-2); font-size: 0.9rem; margin-top: 4px; }
+.quiz-complete { text-align: left; }
+.quiz-complete h2 { font-family: var(--f-sym); font-variation-settings: 'wdth' 120; font-weight: 800; font-size: 2rem; }
+.quiz-complete p { color: var(--ink-2); margin: 6px 0 20px; }
+
+.quiz-stats {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 18px;
+}
+.quiz-stats > div {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.stat-val {
+  font-family: var(--f-sym);
+  font-variation-settings: 'wdth' 110;
+  font-weight: 800;
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--ink);
+ 
+  order: -1;
+  margin-bottom: 6px;
+}
+.quiz-stats .streak-hot .stat-val { color: var(--sodium); }
+
+/* Custom element picker */
+#quiz-custom-picker {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  padding: 20px 20px 16px;
+  margin-bottom: 22px;
+}
+.custom-picker-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.custom-picker-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.custom-count-badge {
+  background: var(--sodium);
+  color: var(--sodium-ink);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.custom-picker-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.custom-picker-actions button {
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+.custom-picker-actions button:hover { border-color: var(--ink-3); }
+#quiz-custom-picker .cell:not(.selected):not(.empty):not(.placeholder) {
+  background: var(--paper);
+  border-color: var(--rule);
+  color: var(--ink-3);
+}
+#quiz-custom-picker .cell:not(.selected) .num,
+#quiz-custom-picker .cell:not(.selected) .name { color: var(--ink-3); }
+#quiz-custom-picker .cell.selected { box-shadow: inset 0 0 0 2px var(--ink); }
+.start-quiz-wrap { display: flex; justify-content: flex-end; margin-top: 14px; }
+#change-selection-wrap { margin-bottom: 16px; }
+
+/* ---------- Formulas ---------- */
+.formulas-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.formulas-toolbar { display: flex; gap: 10px; flex-wrap: wrap; }
+.formulas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+.formula-card {
+  --fc: var(--ink-3);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 14px 16px 14px;
+  display: grid;
+  align-content: start;
+  position: relative;
+  overflow: hidden;
+}
+.formula-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--fc);
+}
+.formula-card .formula {
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin: 8px 0 10px;
+  min-height: 1.3em;
+}
+.formula-card .formula .katex { font-size: 1em; }
+.formula-card .name-en { font-weight: 600; line-height: 1.3; }
+.formula-card .name-zh { font-family: var(--f-zh); font-weight: 500; color: var(--ink-2); font-size: 1.05rem; }
+.formula-card.hide-zh .name-zh, .formula-card.hide-en .name-en { display: none; }
+.formula-card.hide-en .name-zh { color: var(--ink); font-size: 1.15rem; }
+.cat-tag { font-size: 0.75rem; font-weight: 700; color: color-mix(in oklab, var(--fc) 75%, var(--ink)); }
+.cat-acid { --fc: #d9534f; }
+.cat-base { --fc: #3b7dd8; }
+.cat-salt { --fc: #8a8f9c; }
+.cat-oxide { --fc: #d08a2e; }
+.cat-organic { --fc: #3ba272; }
+.cat-gas { --fc: #8d6cd1; }
+.cat-other { --fc: #3aa6b9; }
+.formula-card .cat-tag { justify-self: start; }
+
+/* Hand-set chemistry formula fallback (when KaTeX is unavailable) */
+.chem { font-family: 'Latin Modern Roman', 'Cambria Math', 'Times New Roman', serif; font-weight: 400; letter-spacing: 0.01em; }
+.chem sub { font-size: 0.68em; vertical-align: -0.28em; line-height: 0; }
+
+/* ---------- Build ---------- */
+.build-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 22px;
+  align-items: start;
+}
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  padding: 18px 20px 20px;
+}
+.panel h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.build-palette-wrap { overflow-x: auto; }
+.build-ptable {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(34px, 1fr));
+  gap: 3px;
+  min-width: 660px;
+}
+.build-ptable + .build-ptable { margin-top: 3px; }
+.build-cell {
+  --c: var(--cat-unknown);
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--c) var(--tint), var(--surface));
+  border: 1px solid color-mix(in oklab, var(--c) 45%, transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  line-height: 1;
+}
+.build-cell:hover { box-shadow: 0 0 0 2px var(--ink); z-index: 1; }
+.build-cell:active { transform: scale(.94); }
+.build-cell .b-num { position: absolute; top: 2px; left: 3px; font-size: 0.5rem; color: var(--ink-2); }
+.build-cell .b-sym { font-family: var(--f-sym); font-variation-settings: 'wdth' 120; font-weight: 800; font-size: 0.92rem; }
+.build-cell.b-empty { background: none; border: none; pointer-events: none; }
+.build-cell.b-ph { background: none; border: 1px dashed var(--rule); font-size: 0.5rem; color: var(--ink-3); pointer-events: none; text-align: center; }
+
+.build-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 84px; }
+.build-mix-clear {
+  border: 1px solid var(--rule);
+  background: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  color: var(--ink-2);
+}
+.build-mix-clear:hover { color: var(--wrong); border-color: var(--wrong); }
+.build-mix-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.build-mix-empty { color: var(--ink-3); font-size: 0.9rem; }
+.mix-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 10px 6px 12px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.mix-chip:hover { border-color: var(--wrong); }
+.mix-chip:hover .chip-x { color: var(--wrong); }
+.chip-sym { font-family: var(--f-sym); font-variation-settings: 'wdth' 120; font-weight: 800; font-size: 1.05rem; }
+.chip-cnt { font-weight: 600; color: var(--ink-2); }
+.chip-x { font-size: 0.7rem; color: var(--ink-3); }
+
+.build-result {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  padding: 20px 22px 22px;
+  min-height: 220px;
+  transition: background .25s, border-color .25s;
+}
+.build-result.matched {
+  background: color-mix(in oklab, var(--correct) 12%, var(--surface));
+  border-color: var(--correct);
+}
+.build-result-status { font-size: 0.85rem; font-weight: 700; color: var(--ink-2); }
+.build-result.matched .build-result-status { color: var(--correct); }
+.build-result-formula { font-size: 2.6rem; line-height: 1.2; margin: 10px 0 8px; min-height: 1.3em; word-break: break-all; }
+.build-result-name { font-size: 1.25rem; font-weight: 700; }
+.build-result-zh { font-family: var(--f-zh); font-size: 1.15rem; color: var(--ink-2); }
+.build-result-hint { color: var(--ink-2); font-size: 0.88rem; margin-top: 12px; }
+.build-instructions { color: var(--ink-2); font-size: 0.92rem; margin-top: 10px; max-width: 70ch; }
+.build-instructions strong { color: var(--ink); }
+
+/* ---------- Modal ---------- */
 .modal-bg {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(17, 26, 44, 0.5);
   display: none;
   align-items: center;
   justify-content: center;
   padding: 20px;
   z-index: 100;
-  backdrop-filter: blur(4px);
 }
 .modal-bg.open { display: flex; }
 .modal {
-  background: var(--bg-card);
-  border-radius: 16px;
-  max-width: 720px;
+  background: var(--surface);
+  border-radius: 18px;
+  max-width: 780px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+  box-shadow: 0 30px 60px rgba(10, 16, 30, 0.35);
+  animation: modal-in .22s cubic-bezier(.2,.8,.2,1);
 }
+@keyframes modal-in { from { opacity: 0; transform: translateY(12px) scale(.98); } }
 .modal-header {
-  padding: 24px;
+  padding: 26px 26px 22px;
   display: flex;
-  gap: 20px;
+  gap: 22px;
   align-items: center;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--rule);
+  position: relative;
 }
 .modal-symbol {
-  width: 96px;
-  height: 96px;
+  --c: var(--cat-unknown);
+  width: 112px;
+  height: 120px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-family: var(--f-sym);
+  font-variation-settings: 'wdth' 140;
+  font-size: 3rem;
+  font-weight: 850;
   flex-shrink: 0;
+  background: color-mix(in oklab, var(--c) calc(var(--tint) + 14%), var(--surface));
+  border: 1px solid color-mix(in oklab, var(--c) 60%, transparent);
 }
 .modal-title-area { flex: 1; min-width: 0; }
-.modal-number {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.modal-name {
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-top: 2px;
-}
-.modal-zh {
-  font-size: 1.3rem;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
+.modal-number { font-size: 0.9rem; color: var(--ink-2); font-weight: 600; }
+.modal-name { font-size: 2rem; font-weight: 700; line-height: 1.1; margin-top: 2px; }
+.modal-zh { font-family: var(--f-zh); font-size: 1.5rem; font-weight: 700; color: var(--ink-2); margin-top: 2px; }
 .modal-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  --c: var(--cat-unknown);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
   font-weight: 600;
   margin-top: 8px;
-  text-transform: capitalize;
 }
+.modal-badge::before { content: ''; width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
 .modal-close {
-  background: var(--bg-main);
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--surface-2);
   border: none;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: var(--text-muted);
-  align-self: flex-start;
-  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--ink-2);
 }
-.modal-close:hover { background: var(--border); color: var(--text-main); }
-.modal-body { padding: 24px; }
-.detail-section { margin-bottom: 20px; }
-.detail-section h3 {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-  font-weight: 600;
-}
+.modal-close:hover { color: var(--ink); }
+.modal-body { padding: 8px 26px 28px; }
+.detail-section { padding: 18px 0; border-bottom: 1px solid var(--rule); }
+.detail-section:last-child { border-bottom: none; }
+.detail-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
 .detail-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px 20px;
 }
-.detail-item {
-  background: var(--bg-main);
-  border-radius: 8px;
-  padding: 10px 12px;
-}
-.detail-label {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
-}
-.detail-value {
-  font-size: 0.95rem;
-  font-weight: 600;
-  margin-top: 2px;
-  word-break: break-word;
-}
-.detail-text {
-  background: var(--bg-main);
-  border-radius: 8px;
-  padding: 12px 14px;
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
+.detail-label { font-size: 0.8rem; color: var(--ink-3); font-weight: 500; }
+.detail-value { font-weight: 600; overflow-wrap: anywhere; }
+.detail-text { color: var(--ink-2); max-width: 68ch; line-height: 1.6; }
+.detail-text strong { color: var(--ink); }
+.atom-row { display: flex; gap: 24px; align-items: center; }
+.atom-row .detail-grid { flex: 1; }
+.bohr { width: 132px; height: 132px; flex-shrink: 0; color: var(--ink); }
+.bohr .orbit { fill: none; stroke: var(--rule); stroke-width: 1; }
+.bohr .electron { fill: var(--ink); }
+.bohr .nucleus { fill: var(--c, var(--ink-3)); }
 
-/* Quiz Mode */
-.quiz-controls {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-bottom: 30px;
-}
-.quiz-controls select {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 2px solid var(--border);
-  background: white;
-  font-size: 0.9rem;
-  font-family: inherit;
-  cursor: pointer;
-  outline: none;
-}
-.quiz-controls select:focus { border-color: var(--primary); }
+/* Family colors feed --c on any element surface (kept last so it wins over component defaults) */
+.alkali-metal { --c: var(--cat-alkali); }
+.alkaline-earth-metal { --c: var(--cat-alkaline); }
+.transition-metal { --c: var(--cat-transition); }
+.post-transition-metal { --c: var(--cat-post-transition); }
+.metalloid { --c: var(--cat-metalloid); }
+.reactive-nonmetal { --c: var(--cat-reactive-nonmetal); }
+.noble-gas { --c: var(--cat-noble); }
+.lanthanide { --c: var(--cat-lanthanide); }
+.actinide { --c: var(--cat-actinide); }
+.unknown { --c: var(--cat-unknown); }
 
-.quiz-card {
-  background: var(--bg-card);
-  width: 100%;
-  max-width: 680px;
-  padding: 48px 32px;
-  border-radius: 20px;
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-  text-align: center;
-  margin: 0 auto;
-}
-.quiz-hint {
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  margin-bottom: 16px;
-  font-weight: 600;
-}
-.quiz-display {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 32px;
-  line-height: 1.1;
-}
-.quiz-input {
-  width: 100%;
-  max-width: 400px;
-  padding: 14px;
-  border-radius: 12px;
-  border: 3px solid var(--border);
-  font-size: 1.4rem;
-  text-align: center;
-  outline: none;
-  font-family: inherit;
-  transition: border-color 0.2s;
-}
-.quiz-input:focus { border-color: var(--primary); }
-.quiz-input:disabled { background: var(--bg-main); color: var(--text-muted); border-color: #cbd5e1; }
-.quiz-input.is-wrong { border-color: var(--wrong) !important; color: var(--wrong); }
-.quiz-feedback {
-  margin-top: 24px;
-  min-height: 60px;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-.quiz-feedback .correct { color: var(--correct); }
-.quiz-feedback .wrong { color: var(--wrong); }
-.quiz-feedback .hint-line {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 400;
-  margin-top: 8px;
-}
-.quiz-stats {
-  margin-top: 32px;
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-.quiz-stats .stat-val {
-  color: var(--primary);
-  font-size: 1.1rem;
-  margin-left: 6px;
-}
-.quiz-complete { text-align: center; padding: 20px; }
-.quiz-complete h2 { font-size: 1.6rem; margin-bottom: 16px; }
-.quiz-complete button {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  font-family: inherit;
-}
-.quiz-complete button:hover { background: var(--primary-hover); }
-
-/* Custom quiz element picker */
-.custom-picker-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg-card);
-  border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
-.custom-picker-info {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  font-size: 0.9rem;
-}
-.custom-count-badge {
-  background: var(--primary);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-.custom-picker-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.custom-picker-actions button {
-  background: var(--bg-main);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  font-family: inherit;
-}
-.custom-picker-actions button:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-#quiz-custom-picker .cell {
-  cursor: pointer;
-  opacity: 0.4;
-  filter: saturate(0.4);
-  transition: opacity 0.15s, filter 0.15s, transform 0.1s;
-}
-#quiz-custom-picker .cell.selected {
-  opacity: 1;
-  filter: saturate(1);
-  box-shadow: 0 0 0 2px var(--primary);
-}
-#quiz-custom-picker .cell:hover:not(.placeholder):not(.empty) {
-  transform: scale(1.08);
-  z-index: 5;
-}
-
-/* Big prominent Start Quiz button */
-.start-quiz-wrap {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  margin-bottom: 8px;
-}
-.btn-start-quiz {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 18px 48px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-size: 1.25rem;
-  font-weight: 700;
-  font-family: inherit;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
-  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-  min-width: 260px;
-}
-.btn-start-quiz:hover {
-  background: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
-}
-.btn-start-quiz:disabled {
-  background: #cbd5e1;
-  color: #64748b;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-
-/* Small Change Selection button shown while custom quiz is active */
-#change-selection-wrap {
-  text-align: center;
-  margin-bottom: 16px;
-}
-.btn-change-selection {
-  background: var(--bg-card);
-  color: var(--primary);
-  border: 1px solid var(--border);
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  font-family: inherit;
-}
-.btn-change-selection:hover {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-/* Formulas view */
-.formulas-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.mode-tabs {
-  display: inline-flex;
-  background: var(--bg-card);
-  border-radius: 10px;
-  padding: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
-.mode-tabs button {
-  background: none;
-  border: none;
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 7px;
-  font-family: inherit;
-  transition: all 0.15s;
-}
-.mode-tabs button.active {
-  background: var(--primary);
-  color: white;
-}
-.lang-toggle {
-  display: inline-flex;
-  background: var(--bg-card);
-  border-radius: 10px;
-  padding: 4px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-}
-.lang-toggle button {
-  background: none;
-  border: none;
-  padding: 8px 14px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 7px;
-  font-family: inherit;
-  transition: all 0.15s;
-}
-.lang-toggle button.active {
-  background: var(--primary);
-  color: white;
-}
-.formulas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-}
-.formula-card {
-  background: var(--bg-card);
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  border: 1px solid var(--border);
-  transition: transform 0.12s, box-shadow 0.12s;
-  position: relative;
-}
-.formula-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-}
-.formula-card .formula {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 8px;
-  letter-spacing: 0.5px;
-}
-.formula-card .name-en {
-  font-size: 0.9rem;
-  color: #334155;
-  line-height: 1.3;
-}
-.formula-card .name-zh {
-  font-size: 1rem;
-  color: #334155;
-  margin-top: 4px;
-  line-height: 1.3;
-}
-.formula-card.hide-en .name-en { display: none; }
-.formula-card.hide-zh .name-zh { display: none; }
-.formula-card .cat-tag {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 0.65rem;
-  padding: 2px 8px;
-  border-radius: 8px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.cat-acid { background: #fecaca; color: #991b1b; }
-.cat-base { background: #c7d2fe; color: #3730a3; }
-.cat-salt { background: #fef3c7; color: #92400e; }
-.cat-oxide { background: #d1fae5; color: #065f46; }
-.cat-organic { background: #fbcfe8; color: #9d174d; }
-.cat-gas { background: #dbeafe; color: #1e40af; }
-.cat-other { background: #e5e7eb; color: #374151; }
-.formulas-view-nav {
-  margin-bottom: 16px;
-}
-
-/* Build (molecule playground) view */
-.build-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-@media (min-width: 1200px) {
-  .build-layout {
-    grid-template-columns: minmax(800px, 1fr) 340px;
-    align-items: start;
-  }
-}
-.build-instructions {
-  background: #eff6ff;
-  border-left: 4px solid var(--primary);
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: #1e3a8a;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-.build-palette-wrap {
-  background: var(--bg-card);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  overflow-x: auto;
-  max-width: 100%;
-  min-width: 0;
-}
-.build-palette-wrap h3 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-}
-.build-ptable {
-  display: grid;
-  grid-template-columns: repeat(18, minmax(38px, 1fr));
-  gap: 5px;
-  min-width: 780px;
-}
-.build-cell {
-  aspect-ratio: 1 / 1;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.1s;
-  padding: 3px;
-  border: 1px solid rgba(0,0,0,0.06);
-}
-.build-cell:hover {
-  transform: scale(1.15);
-  z-index: 5;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-.build-cell:active { transform: scale(1.05); }
-.build-cell .b-sym {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #0f172a;
-  line-height: 1;
-}
-.build-cell .b-num {
-  font-size: 0.5rem;
-  color: #475569;
-  line-height: 1;
-  margin-bottom: 1px;
-}
-.build-cell.b-empty { background: transparent; border: none; pointer-events: none; }
-.build-cell.b-ph {
-  background: #f1f5f9;
-  border: 1px dashed var(--border);
-  font-size: 0.5rem;
-  color: var(--text-muted);
-  text-align: center;
-  pointer-events: none;
-}
-
-.build-side {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.build-mix {
-  background: var(--bg-card);
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  min-height: 200px;
-}
-.build-mix h3 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.build-mix-clear {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0;
-  font-family: inherit;
-}
-.build-mix-clear:hover { background: var(--bg-main); color: var(--text-main); }
-.build-mix-empty {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  font-style: italic;
-  text-align: center;
-  padding: 30px 0;
-}
-.build-mix-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.mix-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background: var(--bg-main);
-  border-radius: 20px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-  border: 2px solid transparent;
-}
-.mix-chip:hover {
-  background: #fecaca;
-  border-color: var(--wrong);
-}
-.mix-chip .chip-sym { font-size: 1rem; color: #0f172a; }
-.mix-chip .chip-cnt {
-  background: var(--primary);
-  color: white;
-  font-size: 0.75rem;
-  padding: 1px 8px;
-  border-radius: 10px;
-  font-weight: 700;
-}
-.mix-chip .chip-x {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin-left: 2px;
-}
-.mix-chip:hover .chip-x { color: var(--wrong); }
-.build-result {
-  background: var(--bg-card);
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  text-align: center;
-  border: 2px solid var(--border);
-  transition: all 0.2s;
-}
-.build-result.matched {
-  border-color: var(--correct);
-  background: #ecfdf5;
-}
-.build-result-status {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-.build-result.matched .build-result-status { color: var(--correct); }
-.build-result-formula {
-  font-size: 2.75rem;
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 8px;
-  letter-spacing: 0.5px;
-  min-height: 2.75rem;
-}
-.build-result-name {
-  font-size: 1.35rem;
-  color: #334155;
-  line-height: 1.4;
-  font-weight: 600;
-}
-.build-result-zh {
-  font-size: 1.4rem;
-  color: #334155;
-  margin-top: 4px;
-  font-weight: 600;
-}
-.build-result-hint {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-top: 8px;
-  font-style: italic;
-}
-
-@media (max-width: 768px) {
-  .modal-header { flex-direction: column; align-items: flex-start; }
-  .modal-symbol { width: 80px; height: 80px; font-size: 2rem; }
-  .detail-grid { grid-template-columns: 1fr 1fr; }
-  .quiz-card { padding: 32px 20px; }
+/* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .build-layout { grid-template-columns: 1fr; }
+  .build-side { position: static; }
+}
+@media (max-width: 760px) {
+  .topbar-inner { padding: 8px 16px; gap: 12px; flex-wrap: wrap; }
+  .brand-name { display: none; }
+  nav.tabs { order: 3; flex-basis: 100%; }
+  .about-btn { margin-left: auto; }
+  .container { padding: 24px 16px 60px; }
+  .quiz-stage { grid-template-columns: 1fr; }
+  .quiz-stats { grid-template-rows: none; grid-template-columns: 1fr 1fr; }
+  .stat-val { font-size: 2.2rem; }
+  .quiz-card { padding: 28px 20px 24px; min-height: 280px; }
+  .field { min-width: 0; flex: 1 1 100%; }
+  .formulas-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .modal-header { flex-direction: column; align-items: flex-start; padding: 22px 20px 18px; }
+  .modal-symbol { width: 88px; height: 94px; font-size: 2.4rem; }
+  .modal-body { padding: 4px 20px 24px; }
+  .atom-row { flex-direction: column; align-items: flex-start; }
+}
+@media (hover: none) {
+  .preview { visibility: hidden; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 </style>
 </head>
 <body>
-<nav>
-  <button id="nav-table" class="active" onclick="switchView('table')">Periodic Table</button>
-  <button id="nav-quiz" onclick="switchView('quiz')">Element Quiz</button>
-  <button id="nav-formulas" onclick="switchView('formulas')">Formulas</button>
-  <button id="nav-build" onclick="switchView('build')">Build</button>
-  <button id="nav-about" onclick="openAbout()">About</button>
-</nav>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#" onclick="switchView('table');return false;" aria-label="Periodic Table Mastery home">
+      <span class="brand-tile" aria-hidden="true"><small>78</small><b>Pt</b></span>
+      <span class="brand-name">Periodic Table Mastery<span>元素周期表</span></span>
+    </a>
+    <nav class="tabs" aria-label="Sections">
+      <button id="nav-table" class="active" onclick="switchView('table')">Table</button>
+      <button id="nav-quiz" onclick="switchView('quiz')">Element quiz</button>
+      <button id="nav-formulas" onclick="switchView('formulas')">Formulas</button>
+      <button id="nav-build" onclick="switchView('build')">Build</button>
+    </nav>
+    <button class="about-btn" onclick="openAbout()">About</button>
+  </div>
+</header>
 
-<div class="container">
+<main class="container">
   <section id="view-table" class="view active">
-    <h1 class="section-title">Periodic Table of the Elements</h1>
-    <p class="section-sub">Click any element to see its full profile. All 118 elements.</p>
+    <div class="view-head">
+      <div>
+        <h1 class="section-title">The periodic table<span class="zh" lang="zh">元素周期表</span></h1>
+        <p class="section-sub">Hover to preview an element, click for its full profile. Pick a family below to pick it out of the table.</p>
+      </div>
+    </div>
     <div class="table-wrap">
       <div class="ptable" id="ptable-main"></div>
       <div class="ptable f-block" id="ptable-lanth"></div>
       <div class="ptable" id="ptable-act"></div>
     </div>
-    <div class="legend" id="legend"></div>
+    <div class="legend" id="legend" role="group" aria-label="Highlight an element family"></div>
   </section>
 
   <section id="view-quiz" class="view">
-    <h1 class="section-title" style="text-align:center;">Quiz Mode</h1>
-    <p class="section-sub" style="text-align:center;">Test your element knowledge. Type the answer and press Enter.</p>
+    <div class="view-head">
+      <div>
+        <h1 class="section-title">Element quiz<span class="zh" lang="zh">元素测验</span></h1>
+        <p class="section-sub">Type the missing name or symbol and press Enter. Capitals don't matter.</p>
+      </div>
+    </div>
     <div class="quiz-controls">
-      <select id="quiz-mode" onchange="resetQuiz()">
-        <option value="normal">Mode: Normal (Endless)</option>
-        <option value="reinforce">Mode: Reinforce (Repeat Wrongs)</option>
-      </select>
-      <select id="quiz-submode" onchange="resetQuiz()">
-        <option value="1">1. Abbrev + English → Chinese</option>
-        <option value="2">2. Abbrev + Chinese → English</option>
-        <option value="3">3. English + Chinese → Abbrev</option>
-        <option value="4">4. Mixed Challenge</option>
-      </select>
-      <select id="quiz-scope" onchange="onScopeChange()">
-        <option value="common30">Scope: Common 30</option>
-        <option value="all118">Scope: All 118</option>
-        <option value="custom">Scope: Custom (pick your own)</option>
-      </select>
+      <div class="field">
+        <label for="quiz-mode">Mode</label>
+        <select id="quiz-mode" onchange="resetQuiz()">
+          <option value="normal">Endless</option>
+          <option value="reinforce">Reinforce: repeat until all correct</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="quiz-submode">Question</label>
+        <select id="quiz-submode" onchange="resetQuiz()">
+          <option value="1">Symbol + English → Chinese</option>
+          <option value="2">Symbol + Chinese → English</option>
+          <option value="3">English + Chinese → Symbol</option>
+          <option value="4">Mixed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="quiz-scope">Elements</label>
+        <select id="quiz-scope" onchange="onScopeChange()">
+          <option value="common30">Common 30</option>
+          <option value="all118">All 118</option>
+          <option value="custom">Custom: pick your own</option>
+        </select>
+      </div>
     </div>
 
     <div id="quiz-custom-picker" style="display:none;">
       <div class="custom-picker-toolbar">
         <div class="custom-picker-info">
-          <strong>Tap elements to include.</strong>
-          <span class="custom-count-badge">Selected: <span id="custom-count">0</span></span>
+          <strong>Tap elements to include them</strong>
+          <span class="custom-count-badge"><span id="custom-count">0</span> selected</span>
         </div>
         <div class="custom-picker-actions">
           <button onclick="customSelectCommon30()">Common 30</button>
@@ -936,51 +930,57 @@ nav button.active { color: white; background: var(--primary); }
         <div class="ptable" id="quiz-custom-act"></div>
       </div>
       <div class="start-quiz-wrap">
-        <button id="start-custom-quiz" class="btn-start-quiz" onclick="startCustomQuiz()">Start Quiz →</button>
+        <button id="start-custom-quiz" class="btn" onclick="startCustomQuiz()">Start quiz</button>
       </div>
     </div>
 
     <div id="change-selection-wrap" style="display:none;">
-      <button class="btn-change-selection" onclick="changeCustomSelection()">← Change my selection</button>
+      <button class="btn-quiet" onclick="changeCustomSelection()">Change selection</button>
     </div>
-    <div class="quiz-card">
-      <div id="quiz-ui">
-        <div id="quiz-hint" class="quiz-hint">---</div>
-        <div id="quiz-display" class="quiz-display">---</div>
-        <input type="text" id="quiz-input" class="quiz-input" placeholder="Type answer..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-        <div id="quiz-feedback" class="quiz-feedback"></div>
+    <div class="quiz-stage">
+      <div class="quiz-card">
+        <div id="quiz-ui">
+          <div id="quiz-hint" class="quiz-hint">&nbsp;</div>
+          <div id="quiz-display" class="quiz-display"></div>
+          <input type="text" id="quiz-input" class="quiz-input" placeholder="Your answer" aria-label="Your answer" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <div id="quiz-feedback" class="quiz-feedback" aria-live="polite"></div>
+        </div>
+        <div id="quiz-complete-ui" class="quiz-complete" style="display:none;">
+          <h2>List cleared</h2>
+          <p>You answered every element correctly.</p>
+          <button class="btn" onclick="resetQuiz()">Start again</button>
+        </div>
       </div>
-      <div id="quiz-complete-ui" class="quiz-complete" style="display:none;">
-        <h2>🏆 List Cleared!</h2>
-        <button onclick="resetQuiz()">Restart Session</button>
+      <div class="quiz-stats">
+        <div>Left to answer <span class="stat-val" id="stat-remain">0</span></div>
+        <div>Streak <span class="stat-val" id="stat-streak">0</span></div>
       </div>
-    </div>
-    <div class="quiz-stats">
-      <div>Remaining: <span class="stat-val" id="stat-remain">0</span></div>
-      <div>Current Streak: <span class="stat-val" id="stat-streak">0</span></div>
     </div>
   </section>
 
   <section id="view-formulas" class="view">
-    <h1 class="section-title">Chemical Formulas</h1>
-    <p class="section-sub">Browse common compounds or test yourself. Switch between Browse and Quiz below.</p>
-
-    <div class="formulas-view-nav mode-tabs">
-      <button id="ftab-browse" class="active" onclick="switchFormulaTab('browse')">Browse</button>
-      <button id="ftab-quiz" onclick="switchFormulaTab('quiz')">Quiz</button>
+    <div class="view-head">
+      <div>
+        <h1 class="section-title">Chemical formulas<span class="zh" lang="zh">化学式</span></h1>
+        <p class="section-sub">Browse common compounds, or switch to Quiz to test yourself.</p>
+      </div>
+      <div class="seg formulas-view-nav">
+        <button id="ftab-browse" class="active" onclick="switchFormulaTab('browse')">Browse</button>
+        <button id="ftab-quiz" onclick="switchFormulaTab('quiz')">Quiz</button>
+      </div>
     </div>
 
     <div id="formulas-browse">
-      <div class="formulas-toolbar">
-        <div class="lang-toggle">
+      <div class="formulas-bar">
+        <div class="seg">
+          <button id="fscope-30" class="active" onclick="setFormulaScope('common30')">Common 30</button>
+          <button id="fscope-sheet" onclick="setFormulaScope('sheet')">Study sheet</button>
+          <button id="fscope-all" onclick="setFormulaScope('all')">All 101</button>
+        </div>
+        <div class="seg lang-toggle" aria-label="Names shown">
           <button id="lang-both" class="active" onclick="setLang('both')">Both</button>
           <button id="lang-en" onclick="setLang('en')">English</button>
-          <button id="lang-zh" onclick="setLang('zh')">中文</button>
-        </div>
-        <div class="mode-tabs">
-          <button id="fscope-30" class="active" onclick="setFormulaScope('common30')">Common 30</button>
-          <button id="fscope-sheet" onclick="setFormulaScope('sheet')">Study Sheet</button>
-          <button id="fscope-all" onclick="setFormulaScope('all')">All 101</button>
+          <button id="lang-zh" onclick="setLang('zh')" lang="zh">中文</button>
         </div>
       </div>
       <div class="formulas-grid" id="formulas-grid"></div>
@@ -988,67 +988,79 @@ nav button.active { color: white; background: var(--primary); }
 
     <div id="formulas-quiz" style="display:none;">
       <div class="quiz-controls">
-        <select id="fquiz-mode" onchange="resetFormulaQuiz()">
-          <option value="normal">Mode: Normal (Endless)</option>
-          <option value="reinforce">Mode: Reinforce (Repeat Wrongs)</option>
-        </select>
-        <select id="fquiz-submode" onchange="resetFormulaQuiz()">
-          <option value="1">1. Formula → English</option>
-          <option value="2">2. Formula → Chinese</option>
-          <option value="3">3. English → Formula</option>
-          <option value="4">4. Chinese → Formula</option>
-          <option value="5">5. Mixed Challenge</option>
-        </select>
-        <select id="fquiz-scope" onchange="resetFormulaQuiz()">
-          <option value="common30">Scope: Common 30</option>
-          <option value="sheet">Scope: Study Sheet (79)</option>
-          <option value="all">Scope: All 101</option>
-        </select>
-      </div>
-      <div class="quiz-card">
-        <div id="fquiz-ui">
-          <div id="fquiz-hint" class="quiz-hint">---</div>
-          <div id="fquiz-display" class="quiz-display">---</div>
-          <input type="text" id="fquiz-input" class="quiz-input" placeholder="Type answer..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-          <div id="fquiz-feedback" class="quiz-feedback"></div>
+        <div class="field">
+          <label for="fquiz-mode">Mode</label>
+          <select id="fquiz-mode" onchange="resetFormulaQuiz()">
+            <option value="normal">Endless</option>
+            <option value="reinforce">Reinforce: repeat until all correct</option>
+          </select>
         </div>
-        <div id="fquiz-complete-ui" class="quiz-complete" style="display:none;">
-          <h2>🏆 List Cleared!</h2>
-          <button onclick="resetFormulaQuiz()">Restart Session</button>
+        <div class="field">
+          <label for="fquiz-submode">Question</label>
+          <select id="fquiz-submode" onchange="resetFormulaQuiz()">
+            <option value="1">Formula → English</option>
+            <option value="2">Formula → Chinese</option>
+            <option value="3">English → Formula</option>
+            <option value="4">Chinese → Formula</option>
+            <option value="5">Mixed</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fquiz-scope">Compounds</label>
+          <select id="fquiz-scope" onchange="resetFormulaQuiz()">
+            <option value="common30">Common 30</option>
+            <option value="sheet">Study sheet (79)</option>
+            <option value="all">All 101</option>
+          </select>
         </div>
       </div>
-      <div class="quiz-stats">
-        <div>Remaining: <span class="stat-val" id="fstat-remain">0</span></div>
-        <div>Current Streak: <span class="stat-val" id="fstat-streak">0</span></div>
+      <div class="quiz-stage">
+        <div class="quiz-card">
+          <div id="fquiz-ui">
+            <div id="fquiz-hint" class="quiz-hint">&nbsp;</div>
+            <div id="fquiz-display" class="quiz-display"></div>
+            <input type="text" id="fquiz-input" class="quiz-input" placeholder="Your answer" aria-label="Your answer" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <div id="fquiz-feedback" class="quiz-feedback" aria-live="polite"></div>
+          </div>
+          <div id="fquiz-complete-ui" class="quiz-complete" style="display:none;">
+            <h2>List cleared</h2>
+            <p>You answered every formula correctly.</p>
+            <button class="btn" onclick="resetFormulaQuiz()">Start again</button>
+          </div>
+        </div>
+        <div class="quiz-stats">
+          <div>Left to answer <span class="stat-val" id="fstat-remain">0</span></div>
+          <div>Streak <span class="stat-val" id="fstat-streak">0</span></div>
+        </div>
       </div>
     </div>
   </section>
 
   <section id="view-build" class="view">
-    <h1 class="section-title">Build Molecules</h1>
-    <p class="section-sub">Tap atoms from the periodic table to combine them. When your mix matches a known compound, it appears on the right.</p>
-
-    <div class="build-instructions">
-      <strong>Try:</strong> tap H twice, then O once → makes water (H₂O). Or Na once + Cl once → makes salt (NaCl). Tap a chip on the right to remove one atom.
+    <div class="view-head">
+      <div>
+        <h1 class="section-title">Build molecules<span class="zh" lang="zh">组合分子</span></h1>
+        <p class="build-instructions">Tap atoms to add them to your mix. When the mix matches a known compound, it's named on the right. <strong>Try</strong> H, H, O for water, or Na, Cl for table salt. Tap an atom in your mix to take one away.</p>
+      </div>
     </div>
 
     <div class="build-layout">
-      <div class="build-palette-wrap">
+      <div class="panel build-palette-wrap">
         <h3>Elements</h3>
         <div class="build-ptable" id="build-ptable-main"></div>
-        <div class="build-ptable" id="build-ptable-lanth" style="margin-top:6px;"></div>
+        <div class="build-ptable" id="build-ptable-lanth" style="margin-top:10px;"></div>
         <div class="build-ptable" id="build-ptable-act"></div>
       </div>
 
       <div class="build-side">
-        <div class="build-mix">
+        <div class="panel build-mix">
           <h3>
-            Your Mix
+            Your mix
             <button class="build-mix-clear" onclick="clearMix()">Clear</button>
           </h3>
           <div id="build-mix-items"></div>
         </div>
-        <div id="build-result" class="build-result">
+        <div id="build-result" class="build-result" aria-live="polite">
           <div class="build-result-status" id="build-result-status">Empty</div>
           <div class="build-result-formula" id="build-result-formula">—</div>
           <div class="build-result-name" id="build-result-name"></div>
@@ -1058,46 +1070,49 @@ nav button.active { color: white; background: var(--primary); }
       </div>
     </div>
   </section>
-</div>
+</main>
 
 <div id="modal" class="modal-bg" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-name">
     <div class="modal-header">
       <div id="m-symbol" class="modal-symbol">—</div>
       <div class="modal-title-area">
         <div id="m-number" class="modal-number">—</div>
         <div id="m-name" class="modal-name">—</div>
-        <div id="m-zh" class="modal-zh">—</div>
+        <div id="m-zh" class="modal-zh" lang="zh">—</div>
         <div id="m-badge" class="modal-badge">—</div>
       </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
     </div>
     <div class="modal-body">
       <div class="detail-section">
         <h3>Basics</h3>
         <div class="detail-grid">
-          <div class="detail-item"><div class="detail-label">Atomic Mass</div><div id="m-mass" class="detail-value">—</div></div>
+          <div class="detail-item"><div class="detail-label">Atomic mass</div><div id="m-mass" class="detail-value">—</div></div>
           <div class="detail-item"><div class="detail-label">Group</div><div id="m-group" class="detail-value">—</div></div>
           <div class="detail-item"><div class="detail-label">Period</div><div id="m-period" class="detail-value">—</div></div>
           <div class="detail-item"><div class="detail-label">Block</div><div id="m-block" class="detail-value">—</div></div>
         </div>
       </div>
       <div class="detail-section">
-        <h3>Physical Properties</h3>
+        <h3>Physical properties</h3>
         <div class="detail-grid">
-          <div class="detail-item"><div class="detail-label">State at 25°C</div><div id="m-phase" class="detail-value">—</div></div>
-          <div class="detail-item"><div class="detail-label">Melting Point</div><div id="m-melt" class="detail-value">—</div></div>
-          <div class="detail-item"><div class="detail-label">Boiling Point</div><div id="m-boil" class="detail-value">—</div></div>
+          <div class="detail-item"><div class="detail-label">State at 25 °C</div><div id="m-phase" class="detail-value">—</div></div>
+          <div class="detail-item"><div class="detail-label">Melting point</div><div id="m-melt" class="detail-value">—</div></div>
+          <div class="detail-item"><div class="detail-label">Boiling point</div><div id="m-boil" class="detail-value">—</div></div>
           <div class="detail-item"><div class="detail-label">Density</div><div id="m-density" class="detail-value">—</div></div>
         </div>
       </div>
       <div class="detail-section">
-        <h3>Atomic Structure</h3>
-        <div class="detail-grid">
-          <div class="detail-item"><div class="detail-label">Electron Config</div><div id="m-config-full" class="detail-value">—</div></div>
-          <div class="detail-item"><div class="detail-label">Short Notation</div><div id="m-config-short" class="detail-value">—</div></div>
-          <div class="detail-item"><div class="detail-label">Electrons per Shell</div><div id="m-shells" class="detail-value">—</div></div>
-          <div class="detail-item"><div class="detail-label">Electronegativity</div><div id="m-eneg" class="detail-value">—</div></div>
+        <h3>Atomic structure</h3>
+        <div class="atom-row">
+          <svg id="m-bohr" class="bohr" viewBox="0 0 132 132" role="img" aria-label="Electron shells"></svg>
+          <div class="detail-grid">
+            <div class="detail-item"><div class="detail-label">Electron configuration</div><div id="m-config-full" class="detail-value">—</div></div>
+            <div class="detail-item"><div class="detail-label">Short notation</div><div id="m-config-short" class="detail-value">—</div></div>
+            <div class="detail-item"><div class="detail-label">Electrons per shell</div><div id="m-shells" class="detail-value">—</div></div>
+            <div class="detail-item"><div class="detail-label">Electronegativity</div><div id="m-eneg" class="detail-value">—</div></div>
+          </div>
         </div>
       </div>
       <div class="detail-section">
@@ -1107,8 +1122,8 @@ nav button.active { color: white; background: var(--primary); }
       <div class="detail-section">
         <h3>Discovery</h3>
         <div class="detail-grid">
-          <div class="detail-item"><div class="detail-label">Discovered By</div><div id="m-disc" class="detail-value">—</div></div>
-          <div class="detail-item"><div class="detail-label">Named By</div><div id="m-named" class="detail-value">—</div></div>
+          <div class="detail-item"><div class="detail-label">Discovered by</div><div id="m-disc" class="detail-value">—</div></div>
+          <div class="detail-item"><div class="detail-label">Named by</div><div id="m-named" class="detail-value">—</div></div>
         </div>
       </div>
       <div class="detail-section">
@@ -1120,13 +1135,13 @@ nav button.active { color: white; background: var(--primary); }
 </div>
 
 <div id="about-modal" class="modal-bg" onclick="if(event.target===this)closeAbout()">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="about-title">
     <div class="modal-header">
       <div class="modal-title-area">
         <div class="modal-number">About</div>
-        <div class="modal-name">Periodic Table Mastery</div>
+        <div class="modal-name" id="about-title">Periodic Table Mastery</div>
       </div>
-      <button class="modal-close" onclick="closeAbout()">✕</button>
+      <button class="modal-close" onclick="closeAbout()" aria-label="Close">✕</button>
     </div>
     <div class="modal-body">
       <div class="detail-section">
@@ -1137,11 +1152,12 @@ nav button.active { color: white; background: var(--primary); }
         </div>
       </div>
       <div class="detail-section">
-        <h3>Data Sources</h3>
+        <h3>Data sources</h3>
         <div class="detail-text">
           Element properties (mass, melting and boiling points, density, electron configurations, discoverers, summaries): <a href="https://github.com/Bowserinator/Periodic-Table-JSON" target="_blank" rel="noopener">Bowserinator Periodic-Table-JSON</a>, which draws from Wikipedia.<br><br>
           Chinese names (元素 1–84): <a href="http://zdic.net/ts/fulu/yuansu/" target="_blank" rel="noopener">汉典 zdic.net</a>.<br>
-          Chinese names (元素 85–118): Chinese Academy of Sciences official announcements (113–118 finalized 2017-05-09).
+          Chinese names (元素 85–118): Chinese Academy of Sciences official announcements (113–118 finalized 2017-05-09).<br><br>
+          Formulas are typeset with <a href="https://katex.org" target="_blank" rel="noopener">KaTeX</a> and its mhchem extension.
         </div>
       </div>
       <div class="detail-section">
@@ -1175,10 +1191,21 @@ const CAT_LABELS_F = {
 
 // Convert digits after letter/closing-paren into subscripts for display
 const SUBS = {'0':'\u2080','1':'\u2081','2':'\u2082','3':'\u2083','4':'\u2084','5':'\u2085','6':'\u2086','7':'\u2087','8':'\u2088','9':'\u2089'};
+// Typeset a formula as HTML: KaTeX + mhchem (\ce{...}) when available,
+// otherwise hand-set <sub> subscripts in a serif math face.
+const formulaCache = {};
 function fmtFormula(f) {
-  return f.replace(/([a-zA-Z\)])(\d+)/g, (m, prev, digits) =>
-    prev + digits.split('').map(d => SUBS[d] || d).join('')
-  );
+  if (formulaCache[f]) return formulaCache[f];
+  let html;
+  if (window.katex) {
+    try {
+      html = katex.renderToString('\\ce{' + f + '}', { throwOnError: true, output: 'html' });
+    } catch (e) { html = null; }
+  }
+  if (!html) {
+    html = '<span class="chem">' + f.replace(/([a-zA-Z\)])(\d+)/g, '$1<sub>$2</sub>') + '</span>';
+  }
+  return (formulaCache[f] = html);
 }
 
 // --- Formulas view state ---
@@ -1297,11 +1324,14 @@ function nextFormulaQuestion() {
   }
   fqTarget = targetField;
 
-  const display = showFields.map(f => f === 'formula' ? fmtFormula(fqCurrent.formula) : fqCurrent[f]).join(' / ');
-  const hintLabel = {'formula': 'Formula', 'name_en': 'English Name', 'name_zh': 'Chinese Name'}[targetField];
+  const display = showFields.map(f => f === 'formula' ? fmtFormula(fqCurrent.formula)
+    : f === 'name_zh' ? `<span class="q-zh" lang="zh">${fqCurrent[f]}</span>` : `<span>${fqCurrent[f]}</span>`).join('<span class="q-sep">/</span>');
+  const hintLabel = {'formula': 'formula', 'name_en': 'English name', 'name_zh': 'Chinese name'}[targetField];
 
   document.getElementById('fquiz-display').innerHTML = display;
-  document.getElementById('fquiz-hint').textContent = `Enter the ${hintLabel}`;
+  document.getElementById('fquiz-hint').textContent = targetField === 'formula'
+    ? 'Type the formula with plain digits, like H2SO4'
+    : `Type the ${hintLabel}`;
   const input = document.getElementById('fquiz-input');
   input.value = '';
   input.disabled = false;
@@ -1317,6 +1347,7 @@ function updateFStats() {
   const remain = mode === 'reinforce' ? fqPool.length : getFormulaScope().length;
   document.getElementById('fstat-remain').textContent = remain;
   document.getElementById('fstat-streak').textContent = fqStreak;
+  document.getElementById('fstat-streak').parentElement.classList.toggle('streak-hot', fqStreak >= 5);
 }
 
 // Normalize answers - allow case-insensitive; for formulas, tolerate no-subscript form
@@ -1343,13 +1374,13 @@ document.getElementById('fquiz-input').addEventListener('keydown', (e) => {
   }
 
   if (ok) {
-    fb.innerHTML = '<span class="correct">Correct! \u2728</span>';
+    fb.innerHTML = '<span class="correct">Correct</span>';
     fqStreak++;
     if (isReinforce) fqPool = fqPool.filter(x => x !== fqCurrent);
     setTimeout(nextFormulaQuestion, 600);
   } else {
     const displayCorrect = fqTarget === 'formula' ? fmtFormula(correct) : correct;
-    fb.innerHTML = `<span class="wrong">Wrong! Correct: ${displayCorrect}</span><span class="hint-line">Press any key to continue...</span>`;
+    fb.innerHTML = `<span class="wrong">Not quite. The answer is ${displayCorrect}</span><span class="hint-line">Press any key for the next one</span>`;
     fqStreak = 0;
     input.disabled = true;
     input.classList.add('is-wrong');
@@ -1563,7 +1594,7 @@ function updateBuildResult() {
   const match = PARSED_FORMULAS.find(f => atomsEqual(f.atoms, currentMix));
   if (match) {
     card.classList.add('matched');
-    status.textContent = '✨ You built:';
+    status.textContent = 'Match found';
     formula.innerHTML = fmtFormula(match.formula);
     name.textContent = match.name_en;
     zh.textContent = match.name_zh;
@@ -1701,8 +1732,16 @@ function renderTable() {
   });
   
   main.innerHTML = '';
+  // Live preview occupies the empty block above the transition metals
+  const preview = document.createElement('div');
+  preview.className = 'preview';
+  preview.id = 'preview';
+  preview.setAttribute('aria-live', 'polite');
+  main.appendChild(preview);
+  renderPreview(null);
   for (let r = 0; r < 7; r++) {
     for (let c = 0; c < 18; c++) {
+      if (r < 3 && c >= 2 && c <= 11) continue; // covered by preview
       // Placeholder anchors for La and Ac series
       if (r === 5 && c === 2) {
         const ph = document.createElement('div');
@@ -1759,7 +1798,13 @@ function addSpacer(parent, n) {
 function makeCell(el) {
   const c = document.createElement('div');
   c.className = `cell ${el.category}`;
+  c.dataset.cat = el.category;
+  c.tabIndex = 0;
+  c.setAttribute('role', 'button');
+  c.setAttribute('aria-label', `${el.name_en}, ${el.number}`);
   c.onclick = () => openModal(el);
+  c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(el); } };
+  c.onmouseenter = c.onfocus = () => renderPreview(el);
   c.innerHTML = `
     <div class="num">${el.number}</div>
     <div class="sym">${el.symbol}</div>
@@ -1769,31 +1814,58 @@ function makeCell(el) {
   return c;
 }
 
-// --- Legend ---
+// --- Preview (fills the gap in the main table) ---
+function renderPreview(el) {
+  const p = document.getElementById('preview');
+  if (!p) return;
+  if (!el) {
+    p.innerHTML = `<div class="preview-tile" aria-hidden="true"><span class="p-num">?</span><span class="p-sym">?</span><span class="p-mass">&nbsp;</span></div>
+      <p class="preview-empty">Point at any element to see it here. Click to open its full profile.</p>`;
+    return;
+  }
+  p.innerHTML = `
+    <div class="preview-tile ${el.category}" aria-hidden="true">
+      <span class="p-num">${el.number}</span>
+      <span class="p-sym">${el.symbol}</span>
+      <span class="p-mass">${fmtMass(el.mass)}</span>
+    </div>
+    <div class="preview-info">
+      <div class="preview-name">${el.name_en}<span class="zh" lang="zh">${el.name_zh}</span></div>
+      <div class="preview-family">${CATEGORY_LABELS[el.category] || el.category}</div>
+      <dl class="preview-facts">
+        <div><dt>Configuration</dt><dd>${supify(el.electron_config_short)}</dd></div>
+        <div><dt>State at 25 °C</dt><dd>${el.phase || '—'}</dd></div>
+        <div><dt>Electronegativity</dt><dd>${el.electronegativity != null ? el.electronegativity : '—'}</dd></div>
+      </dl>
+    </div>`;
+}
+
+// --- Legend: each family is a toggle that dims the rest of the table ---
+let legendFocus = null;
 function renderLegend() {
   const legend = document.getElementById('legend');
   const cats = ["alkali-metal","alkaline-earth-metal","transition-metal","post-transition-metal","metalloid","reactive-nonmetal","noble-gas","lanthanide","actinide"];
-  legend.innerHTML = cats.map(c => {
-    const cssVar = {
-      "alkali-metal": "--cat-alkali",
-      "alkaline-earth-metal": "--cat-alkaline",
-      "transition-metal": "--cat-transition",
-      "post-transition-metal": "--cat-post-transition",
-      "metalloid": "--cat-metalloid",
-      "reactive-nonmetal": "--cat-reactive-nonmetal",
-      "noble-gas": "--cat-noble",
-      "lanthanide": "--cat-lanthanide",
-      "actinide": "--cat-actinide"
-    }[c];
-    return `<div class="legend-item"><div class="legend-swatch" style="background:var(${cssVar})"></div>${CATEGORY_LABELS[c]}</div>`;
-  }).join('');
+  legend.innerHTML = cats.map(c =>
+    `<button class="legend-item" data-cat="${c}" aria-pressed="false"><span class="legend-swatch ${c}" style="background:var(--c)"></span>${CATEGORY_LABELS[c]}</button>`
+  ).join('');
+  legend.querySelectorAll('.legend-item').forEach(b => {
+    b.onclick = () => setLegendFocus(legendFocus === b.dataset.cat ? null : b.dataset.cat);
+  });
+}
+
+function setLegendFocus(cat) {
+  legendFocus = cat;
+  document.querySelectorAll('#legend .legend-item').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.cat === cat)));
+  document.querySelectorAll('#view-table .cell[data-cat]').forEach(c =>
+    c.classList.toggle('dim', !!cat && c.dataset.cat !== cat));
 }
 
 // --- Modal ---
 function openModal(el) {
   document.getElementById('m-symbol').textContent = el.symbol;
   document.getElementById('m-symbol').className = `modal-symbol ${el.category}`;
-  document.getElementById('m-number').textContent = `Element #${el.number}`;
+  document.getElementById('m-number').textContent = `Atomic number ${el.number}`;
   document.getElementById('m-name').textContent = el.name_en;
   document.getElementById('m-zh').textContent = el.name_zh;
   
@@ -1818,6 +1890,7 @@ function openModal(el) {
   document.getElementById('m-config-short').innerHTML = supify(el.electron_config_short);
   document.getElementById('m-shells').textContent = el.shells && el.shells.length ? el.shells.join(', ') : '—';
   document.getElementById('m-eneg').textContent = el.electronegativity != null ? el.electronegativity : '—';
+  renderBohr(el);
   
   // Appearance + Discovery + Summary
   document.getElementById('m-appearance').textContent = el.appearance || '—';
@@ -1825,20 +1898,49 @@ function openModal(el) {
   document.getElementById('m-named').textContent = el.named_by || '—';
   document.getElementById('m-summary').textContent = el.summary || '—';
   
-  document.getElementById('modal').classList.add('open');
+  showDialog('modal');
 }
 
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
+// Concentric-shell (Bohr) sketch built from the electrons-per-shell data
+function renderBohr(el) {
+  const svg = document.getElementById('m-bohr');
+  svg.setAttribute('class', `bohr ${el.category}`);
+  const shells = el.shells || [];
+  if (!shells.length) { svg.innerHTML = ''; return; }
+  const cx = 66, cy = 66, inner = 16, outer = 62;
+  const step = shells.length > 1 ? (outer - inner) / (shells.length - 1) : 0;
+  let out = `<circle class="nucleus" cx="${cx}" cy="${cy}" r="9"/>`;
+  shells.forEach((n, i) => {
+    const r = shells.length > 1 ? inner + step * i : 30;
+    out += `<circle class="orbit" cx="${cx}" cy="${cy}" r="${r}"/>`;
+    const dot = n > 18 ? 1.6 : 2.3;
+    for (let k = 0; k < n; k++) {
+      const a = (k / n) * Math.PI * 2 - Math.PI / 2 + i * 0.35;
+      out += `<circle class="electron" cx="${(cx + r * Math.cos(a)).toFixed(2)}" cy="${(cy + r * Math.sin(a)).toFixed(2)}" r="${dot}"/>`;
+    }
+  });
+  svg.innerHTML = out;
+  svg.setAttribute('aria-label', `Electron shells: ${shells.join(', ')}`);
 }
 
-function openAbout() {
-  document.getElementById('about-modal').classList.add('open');
+let lastFocus = null;
+function showDialog(id) {
+  lastFocus = document.activeElement;
+  const bg = document.getElementById(id);
+  bg.classList.add('open');
+  bg.querySelector('.modal').scrollTop = 0;
+  bg.querySelector('.modal-close').focus();
+}
+function hideDialog(id) {
+  const bg = document.getElementById(id);
+  if (!bg.classList.contains('open')) return;
+  bg.classList.remove('open');
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
 }
 
-function closeAbout() {
-  document.getElementById('about-modal').classList.remove('open');
-}
+function closeModal() { hideDialog('modal'); }
+function openAbout() { showDialog('about-modal'); }
+function closeAbout() { hideDialog('about-modal'); }
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -1886,10 +1988,10 @@ function showCustomPlaceholder() {
   const fb = document.getElementById('quiz-feedback');
   if (customSelected.size === 0) {
     hint.textContent = 'Pick some elements above';
-    disp.textContent = '— empty —';
+    disp.textContent = 'Nothing selected yet';
   } else {
-    hint.textContent = 'Ready';
-    disp.textContent = 'Click "Start Quiz" when done picking';
+    hint.textContent = 'Ready when you are';
+    disp.textContent = 'Press Start quiz';
   }
   input.disabled = true;
   input.value = '';
@@ -2056,7 +2158,7 @@ function nextQuestion() {
   const source = isReinforce ? quizPool : quizScope();
   if (source.length === 0) {
     document.getElementById('quiz-hint').textContent = 'Pick some elements first';
-    document.getElementById('quiz-display').textContent = '— empty —';
+    document.getElementById('quiz-display').textContent = 'Nothing selected yet';
     document.getElementById('quiz-input').disabled = true;
     document.getElementById('quiz-feedback').innerHTML = '';
     updateStats();
@@ -2084,17 +2186,17 @@ function nextQuestion() {
   else quizTarget = ['symbol', 'name_en', 'name_zh'][Math.floor(Math.random() * 3)];
   
   const disp = [];
-  if (quizTarget !== 'symbol') disp.push(quizCurrent.symbol);
-  if (quizTarget !== 'name_en') disp.push(quizCurrent.name_en);
-  if (quizTarget !== 'name_zh') disp.push(quizCurrent.name_zh);
+  if (quizTarget !== 'symbol') disp.push({ html: `<span class="q-sym">${quizCurrent.symbol}</span>` });
+  if (quizTarget !== 'name_en') disp.push({ html: `<span>${quizCurrent.name_en}</span>` });
+  if (quizTarget !== 'name_zh') disp.push({ html: `<span class="q-zh" lang="zh">${quizCurrent.name_zh}</span>` });
   
-  document.getElementById('quiz-display').textContent = disp.join(' + ');
+  document.getElementById('quiz-display').innerHTML = disp.map(d => d.html).join('<span class="q-sep">+</span>');
   const hintLabel = {
-    'symbol': 'Symbol',
-    'name_en': 'English Name',
-    'name_zh': 'Chinese Name'
+    'symbol': 'symbol',
+    'name_en': 'English name',
+    'name_zh': 'Chinese name'
   }[quizTarget];
-  document.getElementById('quiz-hint').textContent = `Enter the ${hintLabel}`;
+  document.getElementById('quiz-hint').textContent = `Type the ${hintLabel}`;
   
   const input = document.getElementById('quiz-input');
   input.value = '';
@@ -2111,6 +2213,7 @@ function updateStats() {
   const remain = mode === 'reinforce' ? quizPool.length : quizScope().length;
   document.getElementById('stat-remain').textContent = remain;
   document.getElementById('stat-streak').textContent = quizStreak;
+  document.getElementById('stat-streak').parentElement.classList.toggle('streak-hot', quizStreak >= 5);
 }
 
 // Global keydown for "press any key after wrong"
@@ -2130,12 +2233,12 @@ document.getElementById('quiz-input').addEventListener('keydown', (e) => {
   const isReinforce = document.getElementById('quiz-mode').value === 'reinforce';
   
   if (answer === correct) {
-    fb.innerHTML = '<span class="correct">Correct! ✨</span>';
+    fb.innerHTML = '<span class="correct">Correct</span>';
     quizStreak++;
     if (isReinforce) quizPool = quizPool.filter(x => x !== quizCurrent);
     setTimeout(nextQuestion, 600);
   } else {
-    fb.innerHTML = `<span class="wrong">Wrong! Correct: ${quizCurrent[quizTarget]}</span><span class="hint-line">Press any key to continue...</span>`;
+    fb.innerHTML = `<span class="wrong">Not quite. The answer is ${quizCurrent[quizTarget]}</span><span class="hint-line">Press any key for the next one</span>`;
     quizStreak = 0;
     input.disabled = true;
     input.classList.add('is-wrong');
